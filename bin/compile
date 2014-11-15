@@ -65,8 +65,6 @@ mv $build_dir/go $build_dir/vendor/go
 chmod +x $build_dir/vendor/go/bin/*
 GOROOT=$build_dir/vendor/go
 PATH=$build_dir/vendor/go/bin:$PATH
-#create a symlink in /usr/bin
-ln -s $build_dir/vendor/go/bin/go /usr/bin/go
 
 go-crosscompile-build-all
 
