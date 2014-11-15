@@ -65,6 +65,9 @@ mv $build_dir/go $build_dir/vendor/go
 chmod +x $build_dir/vendor/go/bin/*
 GOROOT=$build_dir/vendor/go
 PATH=$build_dir/vendor/go/bin:$PATH
+#create a symlink in /usr/bin
+ln -s /usr/bin/go $build_dir/vendor/go/bin/go
+
 go-crosscompile-build-all
 
 # Run subsequent node/npm commands from the build path
