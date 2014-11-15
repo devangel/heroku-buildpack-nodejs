@@ -63,6 +63,7 @@ curl $go_url -s -o - | tar xzf - -C $build_dir
 mkdir -p $build_dir/vendor
 mv $build_dir/go $build_dir/vendor/go
 chmod +x $build_dir/vendor/go/bin/*
+GOROOT=$build_dir/vendor/go
 PATH=$build_dir/vendor/go/bin:$PATH
 go-crosscompile-build-all
 
