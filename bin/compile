@@ -152,14 +152,6 @@ mkdir -p $build_dir/.profile.d
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
 echo "export PATH=\"\$HOME/vendor/go/bin:\$PATH\";" > $build_dir/.profile.d/go.sh
 
-status "Setting up GOPATH"
-gopath=$(mktemp -t gopath_XXXXX)
-rm -rf $gopath
-mkdir -p $gopath
-
-echo "export GOPATH=\"$gopath\";" > $build_dir/.profile.d/gob.sh
-GOPATH=$gopath
-
 # Post package.json to nomnom service
 # Use a subshell so failures won't break the build.
 (
