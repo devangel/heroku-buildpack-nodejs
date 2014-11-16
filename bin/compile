@@ -69,13 +69,6 @@ PATH=$build_dir/vendor/go/bin:$PATH
 
 go-crosscompile-build-all
 
-# make a tempdir to build in
-echo "Creating GOPATH"
-gopath=$(mktemp -t gopath_XXXXX)
-echo "The GOPATH should be $gopath"
-rm -rf $gopath
-mkdir -p $gopath
-
 # Run subsequent node/npm commands from the build path
 cd $build_dir
 
@@ -159,6 +152,7 @@ mkdir -p $build_dir/.profile.d
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
 echo "export PATH=\"\$HOME/vendor/go/bin:\$PATH\";" > $build_dir/.profile.d/go.sh
 echo "export GOPATH=\"$gopath;" > $build_dir/.profile.d/gob.sh
+GOPATH=$gopath
 
 # Post package.json to nomnom service
 # Use a subshell so failures won't break the build.
