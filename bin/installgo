@@ -1,8 +1,6 @@
 #!/bin/bash
 # usage: bin/compile <build-dir> <cache-dir> <env-dir>
 
-set -eo pipefail
-
 # Go releases for Darwin beginning with 1.2rc1
 # have included more than one build, depending
 # on the specific version of Mac OS X. Try to
