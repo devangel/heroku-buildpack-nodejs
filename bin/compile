@@ -69,10 +69,10 @@ mkdir -p $GOPATH
 export PATH=$build_dir/vendor/go/bin:$PATH
 export GOPATH
 
-go-crosscompile-build-all
-
 # Run subsequent node/npm commands from the build path
 cd $build_dir
+go-crosscompile-build-all
+
 
 # If node_modules directory is checked into source control then
 # rebuild any native deps. Otherwise, restore from the build cache.
