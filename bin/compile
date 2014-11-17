@@ -55,21 +55,23 @@ chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
 
 # Download go from Google APIs
-status "Downloading and installing go"
-go_url="http://storage.googleapis.com/golang/go1.3.3.linux-amd64.tar.gz"
-curl $go_url -s -o - | tar xzf - -C $build_dir
+#status "Downloading and installing go"
+#go_url="http://storage.googleapis.com/golang/go1.3.3.linux-amd64.tar.gz"
+#curl $go_url -s -o - | tar xzf - -C $build_dir
 
 # Move go into ./vendor and make them executable
-mkdir -p $build_dir/vendor
-mv $build_dir/go $build_dir/vendor/go
-chmod +x $build_dir/vendor/go/bin/*
-GOROOT=$build_dir/vendor/go
-GOPATH=$build_dir/src/go
-mkdir -p $GOPATH
-export PATH=$build_dir/vendor/go/bin:$PATH
-export GOPATH
+#mkdir -p $build_dir/vendor
+#mv $build_dir/go $build_dir/vendor/go
+#chmod +x $build_dir/vendor/go/bin/*
+#GOROOT=$build_dir/vendor/go
+#GOPATH=$build_dir/src/go
+#mkdir -p $GOPATH
+#export PATH=$build_dir/vendor/go/bin:$PATH
+#export GOPATH
 
-go-crosscompile-build-all
+installgo $*
+
+#go-crosscompile-build-all
 
 # Run subsequent node/npm commands from the build path
 cd $build_dir
@@ -152,7 +154,7 @@ status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
-echo "export PATH=\"\$HOME/vendor/go/bin:\$PATH\";" > $build_dir/.profile.d/go.sh
+#echo "export PATH=\"\$HOME/vendor/go/bin:\$PATH\";" > $build_dir/.profile.d/go.sh
 
 # Post package.json to nomnom service
 # Use a subshell so failures won't break the build.
