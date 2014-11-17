@@ -65,6 +65,7 @@ else
   go_url="http://storage.googleapis.com/golang/go$go_ver.linux-amd64.tar.gz"
   curl $go_url -s -o - | tar xzf - -C $ver_dir
   cd $ver_dir
+  GOROOT=$ver_dir
   go-crosscompile-build-all
 fi
 
