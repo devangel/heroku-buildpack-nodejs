@@ -4,6 +4,11 @@ set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
 # set -x          # enable debugging
 
+
+status "Installing Go"
+
+$build_dir/bin/installgo $*
+
 # Configure directories
 build_dir=$1
 cache_dir=$2
@@ -166,8 +171,3 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
     https://nomnom.heroku.com/?request_id=$REQUEST_ID \
     > /dev/null
 ) &
-
-
-status "Installing Go"
-
-#source $build_dir/bin/installgo $*
