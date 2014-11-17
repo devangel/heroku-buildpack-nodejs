@@ -9,7 +9,7 @@ build_dir=$1
 cache_dir=$2
 env_dir=$3
 bp_dir=$(cd $(dirname $0); cd ..; pwd)
-
+go_ver="1.3.3"
 # Fix leak
 unset GIT_DIR
 
@@ -55,24 +55,33 @@ chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
 
 # Download go from Google APIs
-status "Downloading and installing go"
-go_url="http://storage.googleapis.com/golang/go1.3.3.linux-amd64.tar.gz"
-curl $go_url -s -o - | tar xzf - -C $build_dir
+cd $cache_dir
+ver_dir=$cache_dir/go/$go_ver
+if test -d $ver_dir: then
+  status "Using cached cross-compile build"
+else
+  mkdir -p $cache_dir/go/$go_ver
+  status "Downloading and installing go"
+  go_url="http://storage.googleapis.com/golang/go$go_ver.linux-amd64.tar.gz"
+  curl $go_url -s -o - | tar xzf - -C $ver_dir
+  cd $ver_dir
+  go-crosscompile-build-all
+fi
 
 # Move go into ./vendor and make them executable
 mkdir -p $build_dir/vendor
-mv $build_dir/go $build_dir/vendor/go
+mv $ver_dir/go $build_dir/vendor/go
 chmod +x $build_dir/vendor/go/bin/*
 GOROOT=$build_dir/vendor/go
-GOPATH=$build_dir/go
+GOPATH=$build_dir/gopath
 mkdir -p $GOPATH
+
 export PATH=$build_dir/vendor/go/bin:$PATH
 export GOPATH
 
 # Run subsequent node/npm commands from the build path
-cd $build_dir
-go-crosscompile-build-all
 
+cd $build_dir
 
 # If node_modules directory is checked into source control then
 # rebuild any native deps. Otherwise, restore from the build cache.

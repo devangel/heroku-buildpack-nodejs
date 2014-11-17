@@ -43,8 +43,8 @@ export_env_dir() {
 }
 
 type setopt >/dev/null 2>&1 && setopt shwordsplit
-PLATFORMS="darwin/386 darwin/amd64 linux/386 linux/amd64 windows/386 windows/amd64"
-#PLATFORMS="darwin/amd64"
+#PLATFORMS="darwin/386 darwin/amd64 linux/386 linux/amd64 windows/386 windows/amd64"
+PLATFORMS="darwin/amd64"
 
 
 function go-alias {
