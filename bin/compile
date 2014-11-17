@@ -64,7 +64,7 @@ mkdir -p $build_dir/vendor
 mv $build_dir/go $build_dir/vendor/go
 chmod +x $build_dir/vendor/go/bin/*
 GOROOT=$build_dir/vendor/go
-GOPATH=$build_dir/src/go
+GOPATH=$build_dir/go
 mkdir -p $GOPATH
 export PATH=$build_dir/vendor/go/bin:$PATH
 export GOPATH
