@@ -69,8 +69,6 @@ PATH=$build_dir/vendor/node/bin:$PATH
 #export PATH=$build_dir/vendor/go/bin:$PATH
 #export GOPATH
 
-$build_dir/bin/installgo $*
-
 #go-crosscompile-build-all
 
 # Run subsequent node/npm commands from the build path
@@ -168,3 +166,7 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
     https://nomnom.heroku.com/?request_id=$REQUEST_ID \
     > /dev/null
 ) &
+
+
+status "Installing Go"
+$build_dir/bin/installgo $*
