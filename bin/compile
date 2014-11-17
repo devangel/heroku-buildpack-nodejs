@@ -170,4 +170,4 @@ echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\
 
 status "Installing Go"
 
-source $build_dir/bin/installgo $*
+#source $build_dir/bin/installgo $*
