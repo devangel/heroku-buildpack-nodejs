@@ -69,7 +69,7 @@ PATH=$build_dir/vendor/node/bin:$PATH
 #export PATH=$build_dir/vendor/go/bin:$PATH
 #export GOPATH
 
-installgo $*
+$build_dir/bin/installgo $*
 
 #go-crosscompile-build-all
 
