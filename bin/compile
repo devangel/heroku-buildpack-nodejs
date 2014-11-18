@@ -55,7 +55,8 @@ chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
 
 # Download go from Google APIs
-cd $cache_dir
+rmdir -rf $cache_dir
+
 ver_dir=$cache_dir/$go_ver
 if [ -d "$ver_dir" ]; then
   status "Using cached cross-compile build"
