@@ -85,6 +85,8 @@ else
   go-crosscompile-build-all
   cd $ver_dir
   tar -zcf go-$go_ver.tgz $ver_dir/go
+  export AWS_ID=AKIAJTSJAAAKQ5A2SB2A
+  export AWS_SECRET=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
   $build_dir/vendor/bin/s3 put https://s3-us-west-2.amazonaws.com/force-cli go-$go_ver.tgz go-$go_ver.tgz "application/gzip"
   rm go-$go_ver.tgz
 fi
