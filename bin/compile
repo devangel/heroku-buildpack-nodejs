@@ -59,6 +59,7 @@ cd $cache_dir
 ver_dir=$cache_dir/go/$go_ver
 if [ -d "$ver_dir" ]; then
   status "Using cached cross-compile build"
+  ls $ver_dir
 else
   mkdir -p $cache_dir/go/$go_ver
   status "Downloading and installing go"
