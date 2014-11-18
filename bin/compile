@@ -70,8 +70,8 @@ else
   go-crosscompile-build-all
   tar -zcf go-$go_ver.tgz $go_ver/go
   $build_dir/vendor/bin/s3 put https://s3-us-west-2.amazonaws.com/force-cli go-$go_ver.tgz $ver_dir/go-$go_ver.tgz "application/gzip"
-  rmdir -rf $ver_dir/go
 fi
+rmdir -rf $ver_dir/go
 
 # Move go into ./vendor and make them executable
 mkdir -p $build_dir/vendor
