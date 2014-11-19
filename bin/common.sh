@@ -19,7 +19,7 @@ install_aws() {
   cd $1
   wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip -nv
   unzip awscli-bundle.zip
-  ./awscli-bundle/install -i $1/vendor/lib/aws
+  ./awscli-bundle/install -i vendor/lib/aws
   rm awscli-bundle.zip
   rm -rf awscli-bundle
 }
