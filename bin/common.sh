@@ -17,9 +17,9 @@ protip() {
 install_aws() {
   echo "Installing s3 cli......."
   cd $1
-  wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+  wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip -nv
   unzip awscli-bundle.zip
-  ./awscli-bundle/install -b ~/bin/aws
+  ./awscli-bundle/install -b $1/vendor/bin/aws -i $1/vendor/lib/aws
 }
 
 # sed -l basically makes sed replace and buffer through stdin to stdout
