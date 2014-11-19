@@ -14,16 +14,6 @@ protip() {
   echo
 }
 
-install_aws() {
-  echo "Installing s3 cli......."
-  cd $1
-  wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip -nv
-  unzip awscli-bundle.zip
-  ./awscli-bundle/install 
-  rm awscli-bundle.zip
-  rm -rf awscli-bundle
-}
-
 # sed -l basically makes sed replace and buffer through stdin to stdout
 # so you get updates while the command runs and dont wait for the end
 # e.g. npm install | indent

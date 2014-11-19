@@ -158,8 +158,6 @@ mkdir -p $build_dir/.profile.d
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
 echo "./$HOME/bin/install_s3_cli;" > $build_dir/.profile.d/s3.sh
 
-#install_aws $build_dir
-
 # Post package.json to nomnom service
 # Use a subshell so failures won't break the build.
 (
