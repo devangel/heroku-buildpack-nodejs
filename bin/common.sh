@@ -15,6 +15,8 @@ protip() {
 }
 
 install_aws() {
+  echo "Installing s3 cli......."
+  cd $1
   wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
   unzip awscli-bundle.zip
   ./awscli-bundle/install -b ~/bin/aws
