@@ -20,6 +20,11 @@ install_aws() {
   wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip -nv
   unzip awscli-bundle.zip
   ./awscli-bundle/install -b $1/vendor/bin/aws -i $1/vendor/lib/aws
+
+  if [ ! -f $1/vendor/bin/aws ]; then
+    rm $1/vendor/bin/aws
+  fi
+  ln -s "~/vendor/lib/aws/bin/aws" "~/vendor/bin/aws"
 }
 
 # sed -l basically makes sed replace and buffer through stdin to stdout
