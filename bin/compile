@@ -71,35 +71,6 @@ export_env_dir() {
   fi
 }
 
-ver_dir=$cache_dir/go-$go_ver
-if [ -d "$ver_dir" ]; then
-  status "Using cached cross-compile build"
-  # get from s3
-else
-  mkdir -p $ver_dir
-  status "Downloading and installing go"
-  go_url="http://storage.googleapis.com/golang/go$go_ver.linux-amd64.tar.gz"
-  curl $go_url -s -o - | tar xzf - -C $ver_dir
-  cd $ver_dir/go
-  GOROOT=$ver_dir/go
-  go-crosscompile-build-all
-  cd $ver_dir
-  tar -zcf go-$go_ver.tgz $ver_dir/go
-  $build_dir/vendor/bin/s3 put https://s3-us-west-2.amazonaws.com/force-cli go-$go_ver.tgz go-$go_ver.tgz "application/gzip"
-  rm go-$go_ver.tgz
-fi
-
-# Move go into ./vendor and make them executable
-mkdir -p $build_dir/vendor
-mv $ver_dir/go $build_dir/vendor/go
-chmod +x $build_dir/vendor/go/bin/*
-GOROOT=$build_dir/vendor/go
-GOPATH=$build_dir/gopath
-mkdir -p $GOPATH
-
-export PATH=$build_dir/vendor/go/bin:$PATH
-export GOPATH
-
 # Run subsequent node/npm commands from the build path
 
 cd $build_dir
