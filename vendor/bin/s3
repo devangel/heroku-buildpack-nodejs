@@ -2,11 +2,7 @@
 # basic amazon s3 operations
 # Licensed under the terms of the GNU GPL v2
 # Copyright 2007 Victor Lowther <victor.lowther@gmail.com>
-
-set -e
-
-basedir="$( cd -P "$( dirname "$0" )" && pwd )"
-PATH="$basedir:$PATH"
+set -o pipefail
 
 # print a message and bail
 die() {
@@ -24,10 +20,11 @@ check_or_die() {
 # Bail if we do not.
 check_s3() {
   local sak x
-  for x in AWS_ID AWS_SECRET; do
+  for x in S3_ACCESS_KEY_ID S3_SECRET_ACCESS_KEY; do
     check_or_die ${x};
   done
-  sak="$(echo -n $AWS_SECRET | wc -c)"
+  [[ -f ${S3_SECRET_ACCESS_KEY} ]] || die "S3_SECRET_ACCESS_KEY must point to a file!"
+  sak="${S3_SECRET_ACCESS_KEY}"
   (( ${sak%%[!0-9 ]*} == 40 )) || \
     die "S3 Secret Access Key is not exactly 40 bytes long.  Please fix it."
 }
@@ -95,10 +92,18 @@ s3_signature_string() {
   local mime="${6}"
   local md5="${5}"
   local headers="${7}"
-  printf "%s\n%s\n%s\n%s\n%s\n%s%s" \
+  printf "%s\n%s\n%s\n%s\n%s" \
     "${verb}" "${md5}" "${mime}" "${date}" \
-    "${headers}" "${bucket}" "${resource}" | \
-    hmac sha1 "${AWS_SECRET}" | openssl base64 -e -a
+    "${bucket}${resource}" | \
+    hmac sha1 "${S3_SECRET_ACCESS_KEY}" | openssl base64 -e -a
+  echo ""
+  echo "Here is what I'm signing"
+  echo ${verb}
+  echo ${md5}
+  echo ${mime}
+  echo ${date}
+  echo ${bucket}${resource}
+  echo "*************"
 }
 
 # cheesy, but it is the best way to have multiple headers.
@@ -117,17 +122,14 @@ s3_curl() {
   # $2 = remote bucket.
   # $3 = remote name
   # $4 = local name.
-  # $5 = mime type
   local bucket remote date sig md5 arg inout headers
   # header handling is kinda fugly, but it works.
-  bucket="${2:+/${2}}/" # slashify the bucket
-  remote="$(urlenc "${3}")" # if you don't, strange things may happen.
-  stdopts="--connect-timeout 10 --fail --silent"
-	mime="${5}"
-  [[ $CURL_S3_DEBUG == true ]] && stdopts="${stdopts} --show-error --fail"
+  bucket="${2:+/${2}}" # slashify the bucket
+  remote="$(urlenc "/${3}")" # if you don't, strange things may happen.
+  stdopts="--connect-timeout 10  -v"
+  [[ $CURL_S3_DEBUG == true ]] && stdopts="${stdopts} --show-error "
   case "${1}" in
    GET) arg="-o" inout="${4:--}" # stdout if no $4
-	  headers[${#headers[@]}]="x-amz-acl: public-read"
 	;;
    PUT) [[ ${2} ]] || die "PUT can has bucket?"
         if [[ ! ${3} ]]; then
@@ -136,11 +138,7 @@ s3_curl() {
 	elif [[ -f ${4} ]]; then
           md5="$(openssl dgst -md5 -binary "${4}"|openssl base64 -e -a)"
 	  arg="-T" inout="${4}"
-	  headers[${#headers[@]}]="x-amz-acl: public-read"
-	  headers[${#headers[@]}]="Expect: 100-continue"
-		if [ "$mime" != "" ]; then
-		  headers[${#headers[@]}]="Content-Type: $mime"
-		fi
+	  #headers[${#headers[@]}]="Expect: 100-continue"
 	else
 	  die "Cannot write non-existing file ${4}"
         fi
@@ -150,24 +148,23 @@ s3_curl() {
    HEAD) arg="-I" ;;
    *) die "Unknown verb ${1}.  It probably would not have worked anyways." ;;
   esac
-  date="$(TZ=UTC date '+%a, %e %b %Y %H:%M:%S %z')"
-  sig=$(s3_signature_string ${1} "${date}" "${bucket}" "${remote}" "${md5}" "${mime}" "x-amz-acl:public-read")
-
-  headers[${#headers[@]}]="Authorization: AWS ${AWS_ID}:${sig}"
+  date="$(TZ=UTC date '+%a, %e %b %Y %H:%M:%S +0000')"
+  sig=$(s3_signature_string ${1} "${date}" "${bucket}" "${remote}" "${md5}")
+  headers[${#headers[@]}]="Authorization: AWS ${S3_ACCESS_KEY_ID}:${sig}"
   headers[${#headers[@]}]="Date: ${date}"
   [[ ${md5} ]] && headers[${#headers[@]}]="Content-MD5: ${md5}"
-    curl ${arg} "${inout}" ${stdopts} -o - -K <(curl_headers "${headers[@]}") \
-       "http://s3.amazonaws.com${bucket}${remote}"
-  return $?
+  url="http://force-cli.s3.amazonaws.com${bucket}${remote}"
+  (curl_headers "${headers[@]}")
+
+  curl ${arg} "${inout}" ${stdopts} -K <(curl_headers "${headers[@]}") \
+    "http:/${bucket}.s3.amazonaws.com${remote}"
 }
 
 s3_put() {
   # $1 = remote bucket to put it into
   # $2 = remote name to put
   # $3 = file to put.  This must be present if $2 is.
-  # $4 = mime type
-  s3_curl PUT "${1}" "${2}" "${3:-${2}}" "${4}"
-  return $?
+  s3_curl PUT "${1}" "${2}" "${3:-${2}}"
 }
 
 s3_get() {
@@ -176,19 +173,16 @@ s3_get() {
   # $3 = local file to get into. Will be overwritten if it exists.
   #      If this contains a path, that path must exist before calling this.
   s3_curl GET "${1}" "${2}" "${3:-${2}}"
-  return $?
 }
 
 s3_test() {
   # same args as s3_get, but uses the HEAD verb instead of the GET verb.
   s3_curl HEAD "${1}" "${2}" >/dev/null
-  return $?
 }
 
 # Hideously ugly, but it works well enough.
 s3_buckets() {
   s3_get |grep -o '<Name>[^>]*</Name>' |sed 's/<[^>]*>//g' |xmldec
-  return $?
 }
 
 # this will only return the first thousand entries, alas
@@ -196,35 +190,38 @@ s3_buckets() {
 # Also need to add xml entity handling.
 s3_list() {
   # $1 = bucket to list
-  [ "x${1}" == "x" ] && return 1
+  [[ ${1} ]] || return 1
+  s3_get "${1}"
   s3_get "${1}" |grep -o '<Key>[^>]*</Key>' |sed 's/<[^>]*>//g'| xmldec
-  return $?
 }
 
 s3_delete() {
   # $1 = bucket to delete from
   # $2 = item to delete
   s3_curl DELETE "${1}" "${2}"
-  return $?
 }
 
 # because this uses s3_list, it suffers from the same flaws.
 s3_rmrf() {
   # $1 = bucket to delete everything from
-  s3_list "${1}" | while read f; do
+  s3_list "${1}" | while read -r f; do
     s3_delete "${1}" "${f}";
   done
 }
 
+echo $AWS_SECRET > secretkey.txt
+export S3_SECRET_ACCESS_KEY=secretkey.txt
 check_deps
-case $1 in
-  put) shift; s3_put "$@" ;;
-  get) shift; s3_get "$@" ;;
-  rm) shift; s3_delete "$@" ;;
-  ls) shift; s3_list "$@" ;;
-  test) shift; s3_test "$@" ;;
+cmd="$1"
+shift
+case $cmd in
+  put) s3_put "$@" ;;
+  get) s3_get "$@" ;;
+  rm) s3_delete "$@" ;;
+  ls) s3_list "$@" ;;
+  test) s3_test "$@" ;;
   buckets) s3_buckets ;;
-  rmrf) shift; s3_rmrf "$@" ;;
-  *) die "Unknown command ${1}."
+  rmrf) s3_rmrf "$@" ;;
+  *) die "Unknown command ${cmd}."
     ;;
 esac
