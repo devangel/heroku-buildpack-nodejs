@@ -136,7 +136,7 @@ fi
 
 # Pull go version from force-cli buck
 ( cd $build_dir/vendor
-curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${go_ver}-linux-amd64cc.tar.gz | tar -xzvfs -
+curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${go_ver}-linux-amd64cc.tar.gz | tar -xzf -
 chmod +x $build_dir/vendor/go/bin/*
 PATH=$build_dir/vendor/go/bin:$PATH
 )
