@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e            # fail fast
+set -o pipefail   # don't ignore exit codes when piping output
+# set -x          # enable debugging
+
+# First, determine version of go to install.
+# Downlad correct version of go
+# cd into the go/src directory
+# set $GOROOT to the go directory
+# set $GOPATH to the go/src directory
+# git clone the cross-compile stuff
+# source the cross-compile.sh -- source golang-crosscompile/crosscompile.bash
+# loop through the supported platforms and run the go-crosscomple-build passing in the platform -- go-crosscompile-build-all
