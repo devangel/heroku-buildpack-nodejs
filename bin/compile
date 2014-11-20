@@ -135,10 +135,13 @@ if [ ! -e $build_dir/Procfile ]; then
 fi
 
 # Pull go version from force-cli buck
-( cd $build_dir/vendor
+(
+mkdir -p $build_dir/vendor/lib
+cd $build_dir/vendor/lib
+status Downloading go version ${go_ver}
 curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${go_ver}-linux-amd64cc.tar.gz | tar -xzf -
-chmod +x $build_dir/vendor/go/bin/*
-PATH=$build_dir/vendor/go/bin:$PATH
+chmod +x $build_dir/vendor/lib/go/bin/*
+PATH=$build_dir/vendor/lib/go/bin:$PATH
 )
 
 # Update the PATH
@@ -146,11 +149,12 @@ status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
-echo "./$HOME/bin/install_s3_cli;" > $build_dir/.profile.d/s3.sh
+echo "export PATH=\"\$HOME/vendor/lib/go/bin:\$PATH\";" > $build_dir/.profile.d/s3.sh
 
 
 # Post package.json to nomnom service
 # Use a subshell so failures won't break the build.
+
 (
   curl \
     --data @$build_dir/package.json \
