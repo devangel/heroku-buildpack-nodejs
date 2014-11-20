@@ -138,7 +138,8 @@ fi
 (
 mkdir -p $build_dir/vendor/lib
 cd $build_dir/vendor/lib
-status Downloading go version ${go_ver}
+
+status "Downloading go version ${go_ver}"
 curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${go_ver}-linux-amd64cc.tar.gz | tar -xzf -
 chmod +x $build_dir/vendor/lib/go/bin/*
 PATH=$build_dir/vendor/lib/go/bin:$PATH
@@ -149,7 +150,7 @@ status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
-echo "export PATH=\"\$HOME/vendor/lib/go/bin:\$PATH\";" > $build_dir/.profile.d/s3.sh
+echo "export PATH=\"\$HOME/vendor/lib/go/bin:\$PATH\";export GOROOT=\"\$HOME/vendor/lib/go\";export GOPATH=\"\$HOME/vendor/lib/go/src\";" > $build_dir/.profile.d/go.sh
 
 
 # Post package.json to nomnom service
