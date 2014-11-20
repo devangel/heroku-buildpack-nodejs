@@ -9,7 +9,6 @@ build_dir=$1
 cache_dir=$2
 env_dir=$3
 bp_dir=$(cd $(dirname $0); cd ..; pwd)
-go_ver="1.3.3"
 # Fix leak
 unset GIT_DIR
 
@@ -60,19 +59,6 @@ PATH=$build_dir/vendor/node/bin:$PATH
 # Download go from Google APIs
 rm -rf $cache_dir
 mkdir $cache_dir
-
-export_env_dir() {
-  env_dir=$3
-  whitelist_regex=${2:-''}
-  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
-  if [ -d "$env_dir" ]; then
-    for e in $(ls $env_dir); do
-      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
-      export "$e=$(cat $env_dir/$e)"
-      :
-    done
-  fi
-}
 
 # Run subsequent node/npm commands from the build path
 
@@ -130,9 +116,6 @@ fi
 
 # Copy goodies to the cache
 cp -r $build_dir/.heroku $cache_dir/node
-cat <<-EOF >$cache_dir/go_ver
-    echo "$go_ver"
-EOF
 
 status "Cleaning up node-gyp and npm artifacts"
 rm -rf "$build_dir/.node-gyp"
