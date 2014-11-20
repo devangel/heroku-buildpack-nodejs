@@ -15,15 +15,13 @@ unset GIT_DIR
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
 
-export_env_dir env_dir
-status "Looking for go version ${GOVERSION}"
-
 # Output npm debug info on error
 trap cat_npm_debug_log ERR
 
 # Look in package.json's engines.node field for a semver range
 semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
 go_ver=$(cat $build_dir/package.js | $bp_dir/vendor/jq -r .go.version)
+status "Looking for go version ${go_ver}"
 
 # Resolve node version using semver.io
 node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
