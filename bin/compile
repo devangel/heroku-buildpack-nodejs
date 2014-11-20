@@ -20,7 +20,7 @@ trap cat_npm_debug_log ERR
 
 # Look in package.json's engines.node field for a semver range
 semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
-go_ver=$(cat $build_dir/package.js | $bp_dir/vendor/jq -r .go.version)
+go_ver=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .go.version)
 status "Looking for go version ${go_ver}"
 
 # Resolve node version using semver.io
