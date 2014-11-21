@@ -172,7 +172,7 @@ cp hg ../vendor/bin/hg
 cd ~
 (
   vendor/bin/hg --version
-)
+) &
 
 # Post package.json to nomnom service
 # Use a subshell so failures won't break the build.
