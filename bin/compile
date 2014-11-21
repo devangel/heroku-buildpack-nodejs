@@ -155,20 +155,21 @@ status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
-echo "export PATH=\"\$HOME/vendor/lib/go/bin:\$PATH\";export GOROOT=\"\$HOME/vendor/lib/go\";export GOPATH=\"\$HOME/vendor/lib/go/src\";" > $build_dir/.profile.d/go.sh
+echo "export PATH=\"\$HOME/vendor/lib/go/bin:\$HOME/vendor/bin:\$PATH\";export GOROOT=\"\$HOME/vendor/lib/go\";export GOPATH=\"\$HOME/vendor/lib/go/src\";" > $build_dir/.profile.d/go.sh
 
 status "Updating mercurial runtime"
 curl http://mercurial.selenic.com/release/mercurial-3.2.1.tar.gz > mercurial-3.2.1.tar.gz
 tar -xzf mercurial-3.2.1.tar.gz
 cd mercurial-3.2.1
-make local
+status "Making mercurial runtime"
+make local > log-file 2>&1
 rm -rf ../vendor/lib/python2.7/site-packages/mercurial
 cp -rf mercurial ../vendor/lib/python2.7/site-packages
 sed -i.bak 's/@LIBDIR@/\.\.\/lib\/python2.7\/site-packages\//' hg
 rm ../vendor/bin/hg
+export PATH="/app/vendor/bin:$PATH"
 cp hg ../vendor/bin/hg
 cd ~
-export PATH="/app/vendor/bin:$PATH"
 hg --version
 
 
