@@ -8,6 +8,11 @@ set -o pipefail   # don't ignore exit codes when piping output
 build_dir=$1
 cache_dir=$2
 env_dir=$3
+
+status "build_dir=$build_dir"
+status "cache_dir=$cache_dir"
+status "env_dir=$env_dir"
+
 bp_dir=$(cd $(dirname $0); cd ..; pwd)
 # Fix leak
 unset GIT_DIR
