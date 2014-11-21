@@ -150,7 +150,7 @@ chmod +x $build_dir/vendor/lib/go/bin/*
 PATH=$build_dir/vendor/lib/go/bin:$PATH
 )
 
-# Update the PATH
+# Update the PATH xx
 status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 
@@ -170,8 +170,9 @@ rm ../vendor/bin/hg
 export PATH="/app/vendor/bin:$PATH"
 cp hg ../vendor/bin/hg
 cd ~
-hg --version
-
+(
+  vendor/bin/hg --version
+)
 
 # Post package.json to nomnom service
 # Use a subshell so failures won't break the build.
