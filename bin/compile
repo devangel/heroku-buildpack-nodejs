@@ -134,7 +134,7 @@ if [ ! -e $build_dir/Procfile ]; then
   fi
 fi
 
-# Pull go version from force-cli buck
+# Pull go version from force-cli bucket
 (
 mkdir -p $build_dir/vendor/lib
 cd $build_dir/vendor/lib

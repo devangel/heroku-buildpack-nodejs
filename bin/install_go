@@ -12,3 +12,34 @@ set -o pipefail   # don't ignore exit codes when piping output
 # git clone the cross-compile stuff
 # source the cross-compile.sh -- source golang-crosscompile/crosscompile.bash
 # loop through the supported platforms and run the go-crosscomple-build passing in the platform -- go-crosscompile-build-all
+#
+
+
+# command playback
+mkdir /tmp/work
+cd /tmp/work
+curl -s https://storage.googleapis.com/golang/go1.3.3.linux-amd64.tar.gz | tar -xzvf -
+cd go/src
+./all.bash
+export GOROOT="/tmp/work/go"
+export GOPATH="/tmp/work/go/src"
+export PATH="/tmp/work/go/bin:$PATH"
+cd go/src
+git clone git://github.com/davecheney/golang-crosscompile.git
+source golang-crosscompile/crosscompile.bash
+go-crosscompile-build darwin/386
+go-crosscompile-build darwin/amd64
+go-crosscompile-build linux/386
+go-crosscompile-build linux/amd64
+go-crosscompile-build windows/386
+go-crosscompile-build windows/amd64
+cd /tmp/work
+tar -zcvf linux-amd64-go-cc-build.tar.gz go
+cd ~
+export PATH="vendor/bin:$PATH"
+export S3_ACCESS_KEY_ID="${AWS_ACCESS}"
+echo -n $AWS_SECRET > secretkey.txt
+export S3_SECRET_ACCESS_KEY="secretkey.txt"
+vendor/bin/s3 put "force-cli" "gobuilds/go1.3.3-linux-amd64cc.tar.gz" /tmp/work/linux-amd64-go-cc-build.tar.gz
+rm /tmp/work/linux-amd64-go-cc-build.tar.gz
+rm -rf /tmp/work/go
