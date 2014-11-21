@@ -170,6 +170,9 @@ rm ../vendor/bin/hg
 export PATH="/app/vendor/bin:$PATH"
 cp hg ../vendor/bin/hg
 cd ~
+status "Clean up mercurial build artifacts"
+rm mercurial-3.2.1.tar.gz
+rm mercurial-3.2.1
 
 # Post package.json to nomnom service
 # Use a subshell so failures won't break the build.
