@@ -141,7 +141,7 @@ fi
 
 # Here we should check to see if the right version of go is stased
 # in S3 so we don't have to build it.
-
+status "Installing go"
 source $bp_dir/bin/build_upload_xcompile_go
 installGo $go_ver $PLATFORMS
 
