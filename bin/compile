@@ -9,8 +9,6 @@ build_dir=$1
 cache_dir=$2
 env_dir=$3
 
-PLATFORMS="darwin/386 darwin/amd64 linux/386 linux/amd64 linux/arm windows/386 windows/amd64"
-
 bp_dir=$(cd $(dirname $0); cd ..; pwd)
 # Fix leak
 unset GIT_DIR
