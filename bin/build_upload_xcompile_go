@@ -22,7 +22,7 @@ installGo() {
   # command playback
   #rm -rf $build_dir/work
   #mkdir /tmp/work
-  cd /tmp/work
+  #cd /tmp/work
 
   env
 
@@ -55,9 +55,8 @@ installGo() {
 
   cd $build_dir
   #echo "Tarballing linux-amd64-go-cc-build.tar.gz go..."
-  #tar -zcvf linux-amd64-go-cc-build.tar.gz go
+  tar -zcvf linux-amd64-go-cc-build.tar.gz go
   mv $build_dir/go $build_dir/vendor/lib/go
-  cd ~
 
   export PATH="vendor/bin:$PATH"
   #export S3_ACCESS_KEY_ID="${AWS_ACCESS}"
