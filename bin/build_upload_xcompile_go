@@ -14,6 +14,11 @@ installGo() {
   # loop through the supported platforms and run the go-crosscomple-build passing in the platform -- go-crosscompile-build-all
   #
 
+  GOVERSION=$1
+  PLATFORMS=$2
+  GOOS="linux"
+  GOARCH="amd64"
+
   # command playback
   rm -rf /tmp/work
   mkdir /tmp/work
