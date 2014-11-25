@@ -14,8 +14,8 @@ installGo() {
   # loop through the supported platforms and run the go-crosscomple-build passing in the platform -- go-crosscompile-build-all
   #
 
-  GOVERSION=$1
-  PLATFORMS=$2
+  GOVERSION=$0
+  PLATFORMS=$1
   GOOS="linux"
   GOARCH="amd64"
 
