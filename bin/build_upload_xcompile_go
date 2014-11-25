@@ -35,6 +35,7 @@ installGo() {
   # need to check if we got a good download
   cd $build_dir/go/src
   sed -i.bak 's/\ -v\ /\ /g' make.bash
+  function echo { builtin echo "-----> $*">&2; builtin echo $@ ; }
   echo "Compiling using ./make.bash"
   ./make.bash #> /dev/null 2>&1
 
@@ -48,6 +49,7 @@ installGo() {
 
   # need to check if we got a good clone
   source golang-crosscompile/crosscompile.bash
+  unset -f echo
 
   for platform in $PLATFORMS; do
     echo "Compiling for ${platform}..."
