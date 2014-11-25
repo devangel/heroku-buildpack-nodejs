@@ -32,7 +32,7 @@ installGo() {
   # need to check if we got a good download
   cd go/src
   echo "Compiling using ./all.bash"
-  ./all.bash #> /dev/null 2>&1
+  ./make.bash #> /dev/null 2>&1
 
   export GOROOT="/tmp/work/go"
   export GOPATH="/tmp/work/go/src"
