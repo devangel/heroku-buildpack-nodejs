@@ -137,11 +137,18 @@ fi
 
 # Pull go version from force-cli bucket
 (
-mkdir -p $build_dir/vendor/lib
-cd $build_dir/vendor/lib
 
-status "Downloading go version ${go_ver}"
-curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${go_ver}-linux-amd64cc.tar.gz | tar -xzf -
+./build_upload_xcompile_go
+
+
+
+
+
+#mkdir -p $build_dir/vendor/lib
+#cd $build_dir/vendor/lib
+
+#status "Downloading go version ${go_ver}"
+#curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${go_ver}-linux-amd64cc.tar.gz | tar -xzf -
 chmod +x $build_dir/vendor/lib/go/bin/*
 PATH=$build_dir/vendor/lib/go/bin:$PATH
 )

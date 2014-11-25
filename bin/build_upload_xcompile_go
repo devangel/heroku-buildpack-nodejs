@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+set -e            # fail fast
+set -o pipefail   # don't ignore exit codes when piping output
+# set -x          # enable debugging
+
+# First, determine version of go to install.
+# Downlad correct version of go
+# cd into the go/src directory
+# set $GOROOT to the go directory
+# set $GOPATH to the go/src directory
+# git clone the cross-compile stuff
+# source the cross-compile.sh -- source golang-crosscompile/crosscompile.bash
+# loop through the supported platforms and run the go-crosscomple-build passing in the platform -- go-crosscompile-build-all
+#
+
+# command playback
+rm -rf /tmp/work
+mkdir /tmp/work
+cd /tmp/work
+
+#env
+
+echo "Curling for golang version ${GOVERSION}"
+curl -s https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz | tar -xzvf - > /dev/null 2>&1
+
+# need to check if we got a good download
+cd go/src
+echo "Compiling using ./all.bash"
+./all.bash > /dev/null 2>&1
+
+export GOROOT="/tmp/work/go"
+export GOPATH="/tmp/work/go/src"
+export PATH="/tmp/work/go/bin:$PATH"
+
+cd $GOROOT/src
+echo "Cloning git://github.com/davecheney/golang-crosscompile.git"
+git clone git://github.com/davecheney/golang-crosscompile.git
+
+myplats=$PLATFORMS
+
+#plats=$(echo "$a" | sed -n -e '/^PLATFORMS/p' golang-crosscompile/crosscompile.bash)
+#sed "s/${plats}/${myplats}/" golang-crosscompile/crosscompile.bash
+
+# need to check if we got a good clone
+source golang-crosscompile/crosscompile.bash
+PLATFORMS=$myplats
+
+for platform in $PLATFORMS; do
+  echo "Compiling for ${platform}..."
+  go-crosscompile-build $platform
+done
+
+cd /tmp/work
+#echo "Tarballing linux-amd64-go-cc-build.tar.gz go..."
+#tar -zcvf linux-amd64-go-cc-build.tar.gz go
+mv go /app/vendor/lib/go
+cd ~
+
+export PATH="vendor/bin:$PATH"
+#export S3_ACCESS_KEY_ID="${AWS_ACCESS}"
+#echo -n $AWS_SECRET > secretkey.txt
+#export S3_SECRET_ACCESS_KEY="secretkey.txt"
+
+#echo "Uploading tarball to gobuilds/go1.3.3-linux-amd64cc.tar.gz..."
+#vendor/bin/s3 put "force-cli" "gobuilds/go1.3.3-linux-amd64cc.tar.gz" /tmp/work/linux-amd64-go-cc-build.tar.gz
+
+#rm -rf /tmp/work/linux-amd64-go-cc-build.tar.gz
+#rm -rf /tmp/work/go
+echo "Crosscompile build complete for go ${GOVERSION} \nBinaries have been saved to S3 force-cli/gobuilds/go${GOVERSION}-${GOOS}-${GOARCH}cc.tar.gz"
+
+exitcode=$?
