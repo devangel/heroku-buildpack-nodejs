@@ -20,46 +20,43 @@ installGo() {
   GOARCH="amd64"
 
   # command playback
-  rm -rf /tmp/work
-  mkdir /tmp/work
+  #rm -rf $build_dir/work
+  #mkdir /tmp/work
   cd /tmp/work
 
   env
 
-  echo "Curling for golang version ${GOVERSION}"
-  curl -s https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz | tar -xzvf - #> /dev/null 2>&1
+  go_url="https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz"
+
+  echo "Curling for golang version \n${url}"
+  #curl -s https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz | tar -xzvf - #> /dev/null 2>&1
+  cur $go_url -s -o - | tar xzf - -C $build_dir
 
   # need to check if we got a good download
-  cd go/src
+  cd $build_dir/go/src
   echo "Compiling using ./all.bash"
   ./make.bash #> /dev/null 2>&1
 
-  export GOROOT="/tmp/work/go"
-  export GOPATH="/tmp/work/go/src"
-  export PATH="/tmp/work/go/bin:$PATH"
+  export GOROOT="${build_dir}/go"
+  export GOPATH="${GOROOT}/src"
+  export PATH="${GOROOT}/bin:$PATH"
 
   cd $GOROOT/src
   echo "Cloning git://github.com/davecheney/golang-crosscompile.git"
   git clone git://github.com/davecheney/golang-crosscompile.git
 
-  myplats=$PLATFORMS
-
-  #plats=$(echo "$a" | sed -n -e '/^PLATFORMS/p' golang-crosscompile/crosscompile.bash)
-  #sed "s/${plats}/${myplats}/" golang-crosscompile/crosscompile.bash
-
   # need to check if we got a good clone
   source golang-crosscompile/crosscompile.bash
-  PLATFORMS=$myplats
 
   for platform in $PLATFORMS; do
     echo "Compiling for ${platform}..."
     go-crosscompile-build $platform
   done
 
-  cd /tmp/work
+  cd $build_dir
   #echo "Tarballing linux-amd64-go-cc-build.tar.gz go..."
   #tar -zcvf linux-amd64-go-cc-build.tar.gz go
-  mv go /app/vendor/lib/go
+  mv $build_dir/go $build_dir/vendor/lib/go
   cd ~
 
   export PATH="vendor/bin:$PATH"
