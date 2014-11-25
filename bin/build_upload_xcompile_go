@@ -30,7 +30,7 @@ installGo() {
 
   echo "Curling for golang version \n${url}"
   #curl -s https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz | tar -xzvf - #> /dev/null 2>&1
-  cur $go_url -s -o - | tar xzf - -C $build_dir
+  curl $go_url -s -o - | tar xzf - -C $build_dir
 
   # need to check if we got a good download
   cd $build_dir/go/src
