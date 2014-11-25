@@ -138,7 +138,7 @@ fi
 # Pull go version from force-cli bucket
 (
 
-source /app/bin/build_upload_xcompile_go
+source $build_dir/bin/build_upload_xcompile_go
 installGo
 
 
