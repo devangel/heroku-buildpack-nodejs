@@ -139,6 +139,9 @@ fi
 # Pull go version from force-cli bucket
 (
 
+export_env_dir $env_dir
+env
+
 # Here we should check to see if the right version of go is stased
 # in S3 so we don't have to build it.
 status "Installing go"
