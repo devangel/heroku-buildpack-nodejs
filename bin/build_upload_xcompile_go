@@ -34,7 +34,8 @@ installGo() {
 
   # need to check if we got a good download
   cd $build_dir/go/src
-  echo "Compiling using ./all.bash"
+  sed -i.bak 's/\ -v\ /\ /g' make.bash
+  echo "Compiling using ./make.bash"
   ./make.bash #> /dev/null 2>&1
 
   export GOROOT="${build_dir}/go"
@@ -55,7 +56,7 @@ installGo() {
 
   cd $build_dir
   #echo "Tarballing linux-amd64-go-cc-build.tar.gz go..."
-  tar -zcvf linux-amd64-go-cc-build.tar.gz go
+  #tar -zcvf linux-amd64-go-cc-build.tar.gz go
   mv $build_dir/go $build_dir/vendor/lib/go
 
   export PATH="vendor/bin:$PATH"
