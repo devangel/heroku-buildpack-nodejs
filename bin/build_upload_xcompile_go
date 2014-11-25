@@ -1,7 +1,7 @@
 
 installGo() {
-  set -e            # fail fast
-  set -o pipefail   # don't ignore exit codes when piping output
+  #set -e            # fail fast
+  #set -o pipefail   # don't ignore exit codes when piping output
   # set -x          # enable debugging
 
   # First, determine version of go to install.
