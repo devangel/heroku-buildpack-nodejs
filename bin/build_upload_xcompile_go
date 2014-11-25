@@ -47,15 +47,18 @@ installGo() {
   echo "Cloning git://github.com/davecheney/golang-crosscompile.git"
   git clone git://github.com/davecheney/golang-crosscompile.git
 
+  env
+
   # need to check if we got a good clone
   source golang-crosscompile/crosscompile.bash
 
+
   for platform in $PLATFORMS; do
     echo "Compiling for ${platform}..."
-    go-crosscompile-build $platform
+    #go-crosscompile-build $platform
   done
   unset -f echo
-  
+
   cd $build_dir
   #echo "Tarballing linux-amd64-go-cc-build.tar.gz go..."
   #tar -zcvf linux-amd64-go-cc-build.tar.gz go
