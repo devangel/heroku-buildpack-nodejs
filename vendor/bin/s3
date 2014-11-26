@@ -24,11 +24,16 @@ check_s3() {
     check_or_die ${x};
   done
   [[ -f ${S3_SECRET_ACCESS_KEY} ]] || die "S3_SECRET_ACCESS_KEY must point to a file!"
-  sak="${S3_SECRET_ACCESS_KEY}"
+  sak=$(cat ${S3_SECRET_ACCESS_KEY})
 
-  echo "${S#_SECRET_ACCESS_KEY}"
+  echo "${S3_SECRET_ACCESS_KEY}"
   echo "Access key length: ${#sak}"
-
+  echo "SAK ${sak}"
+  echo "S3 Key file: ${S3_SECRET_ACCESS_KEY}"
+  echo "AWS_SECRET is ${AWS_SECRET}"
+  echo "S3_ACCESS_KEY_ID is ${S3_ACCESS_KEY_ID}"
+  echo "AWS_ACCESS is ${AWS_ACCESS}"
+  
   (( ${#sak} == 40 )) || \
     die "S3 Secret Access Key is not exactly 40 bytes long.  Please fix it."
 }
