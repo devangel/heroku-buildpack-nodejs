@@ -69,7 +69,7 @@ installGo() {
   export PATH="vendor/bin:$PATH"
   export S3_ACCESS_KEY_ID="${AWS_ACCESS}"
   echo -n $AWS_SECRET > secretkey.txt
-  export S3_SECRET_ACCESS_KEY="secretkey.txt"
+  export S3_SECRET_ACCESS_KEY=$(cat secretkey.txt)
 
 
   echo "-----> Uploading tarball to gobuilds/go1.3.3-linux-amd64cc.tar.gz..."
