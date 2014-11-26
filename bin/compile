@@ -146,7 +146,7 @@ export_env_dir $env_dir
 if test -f $cache_dir/node/.heroku/go#-version; then
   mkdir -p $build_dir/vendor/lib
   cd $build_dir/vendor/lib
-  cachedGoVersion="$(cat $cache_dir/node/.heroku/go-version)""
+  cachedGoVersion="$(cat $cache_dir/node/.heroku/go-version)"
   status "Downloading cached version of go ${cachedGoVersion}"
   curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${go_ver}-linux-amd64cc.tar.gz | tar -xzf -
   chmod +x $build_dir/vendor/lib/go/bin/*
