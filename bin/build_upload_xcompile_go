@@ -24,8 +24,6 @@ installGo() {
   #mkdir /tmp/work
   #cd /tmp/work
 
-  env
-
   go_url="https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz"
 
   echo "Curling for golang version \n${url}"
