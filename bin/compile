@@ -15,14 +15,15 @@ unset GIT_DIR
 
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
+export_env_dir $env_dir
 
 # Output npm debug info on error
 trap cat_npm_debug_log ERR
 
 # Look in package.json's engines.node field for a semver range
 semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
-go_ver=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .go.version)
-status "Looking for go version ${go_ver}"
+#go_ver=$GOVERSION #$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .go.version)
+status "Looking for go version ${GOVERSION}"
 
 # Resolve node version using semver.io
 node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
@@ -139,22 +140,19 @@ fi
 # Pull go version from force-cli bucket
 (
 
-export_env_dir $env_dir
-
-# Here we should check to see if the right version of go is stased
+# Here we should check to see if the right version of go is stashed
 # in S3 so we don't have to build it.
-if test -f $cache_dir/node/.heroku/go-version; then
-  mkdir -p $build_dir/vendor/lib
-  cd $build_dir/vendor/lib
-  cachedGoVersion="$(cat $cache_dir/node/.heroku/go-version)"
-  status "Downloading cached version of go ${cachedGoVersion}"
-  curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${go_ver}-linux-amd64cc.tar.gz | tar -xzf -
-  chmod +x $build_dir/vendor/lib/go/bin/*
-  PATH=$build_dir/vendor/lib/go/bin:$PATH
-else
+if test -f $cache_dir/node/.heroku/go-version && [ $(cat $cache_dir/node/.heroku/go-version) != "$GOVERSION" ]; then
   status "Installing go"
   source $bp_dir/bin/build_upload_xcompile_go
-  installGo $go_ver $PLATFORMS
+  installGo $GOVERSION $PLATFORMS
+else
+  mkdir -p $build_dir/vendor/lib
+  cd $build_dir/vendor/lib
+  status "Downloading cached version of go ${GOVERSION}"
+  curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${GOVERSION}-linux-amd64cc.tar.gz | tar -xzf -
+  chmod +x $build_dir/vendor/lib/go/bin/*
+  PATH=$build_dir/vendor/lib/go/bin:$PATH
 fi
 
 
