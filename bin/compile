@@ -143,7 +143,7 @@ export_env_dir $env_dir
 
 # Here we should check to see if the right version of go is stased
 # in S3 so we don't have to build it.
-if test -f $cache_dir/node/.heroku/go#-version; then
+if test -f $cache_dir/node/.heroku/go-version; then
   mkdir -p $build_dir/vendor/lib
   cd $build_dir/vendor/lib
   cachedGoVersion="$(cat $cache_dir/node/.heroku/go-version)"
