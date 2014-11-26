@@ -26,15 +26,16 @@ installGo() {
 
   go_url="https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz"
 
-  echo "Curling for golang version \n${url}"
+  function echo() { builtin echo "-----> $*"; }
+
+  echo "Curling for golang version"
+  echo "${url}"
   #curl -s https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz | tar -xzvf - #> /dev/null 2>&1
   curl $go_url -s -o - | tar xzf - -C $build_dir
 
   # need to check if we got a good download
   cd $build_dir/go/src
   sed -i.bak 's/\ -v\ /\ /g' make.bash
-
-  function echo() { builtin echo "-----> $*"; }
 
   echo "Compiling using ./make.bash"
   ./make.bash #> /dev/null 2>&1
