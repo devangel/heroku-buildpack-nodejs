@@ -142,18 +142,19 @@ fi
 # Here we should check to see if the right version of go is stashed
 # in S3 so we don't have to build it.
 status "Go version in cache $(cat $build_dir/.heroku/go-version)"
-if test -f $cache_dir/node/.heroku/go-version && [ $(cat $cache_dir/node/.heroku/go-version) != "$GOVERSION" ]; then
-  status "Installing go"
-  source $bp_dir/bin/build_upload_xcompile_go
-  installGo $GOVERSION $PLATFORMS
-  echo $GOVERSION > $build_dir/.heroku/go-version
-else
+#if test -f $cache_dir/node/.heroku/go-version && [ $(cat $cache_dir/node/.heroku/go-version) != "$GOVERSION" ]; then
+if test -f $cache_dir/node/.heroku/go-version; then
   mkdir -p $build_dir/vendor/lib
   cd $build_dir/vendor/lib
   status "Downloading cached version of go ${GOVERSION}"
   curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${GOVERSION}-linux-amd64cc.tar.gz | tar -xzf -
   chmod +x $build_dir/vendor/lib/go/bin/*
   PATH=$build_dir/vendor/lib/go/bin:$PATH
+else
+  status "Installing go"
+  source $bp_dir/bin/build_upload_xcompile_go
+  installGo $GOVERSION $PLATFORMS
+  echo $GOVERSION > $build_dir/.heroku/go-version
 fi
 
 
