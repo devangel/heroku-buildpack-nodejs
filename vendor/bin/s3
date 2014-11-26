@@ -19,23 +19,15 @@ check_or_die() {
 # check to see if we have all the needed S3 variables defined.
 # Bail if we do not.
 check_s3() {
+  echo -n $AWS_SECRET > ${S3_SECRET_ACCESS_KEY}
   local sak x
   for x in S3_ACCESS_KEY_ID S3_SECRET_ACCESS_KEY; do
     check_or_die ${x};
   done
   [[ -f ${S3_SECRET_ACCESS_KEY} ]] || die "S3_SECRET_ACCESS_KEY must point to a file!"
-  sak=$(cat ${S3_SECRET_ACCESS_KEY})
-
-  echo "${S3_SECRET_ACCESS_KEY}"
-  echo "Access key length: ${#sak}"
-  echo "SAK ${sak}"
-  echo "S3 Key file: ${S3_SECRET_ACCESS_KEY}"
-  echo "AWS_SECRET is ${AWS_SECRET}"
-  echo "S3_ACCESS_KEY_ID is ${S3_ACCESS_KEY_ID}"
-  echo "AWS_ACCESS is ${AWS_ACCESS}"
-
-  (( ${#sak} == 40 )) || \
-    die "S3 Secret Access Key is not exactly 40 bytes long.  Please fix it."
+  sak="$(wc -c "${S3_SECRET_ACCESS_KEY}")"
+  (( ${sak%%[!0-9 ]*} == 40 )) || \
+  die "S3 Secret Access Key is not exactly 40 bytes long.  Please fix it."
 }
 # check to see if our external dependencies exist
 check_dep() {
@@ -58,17 +50,17 @@ urlenc() {
   # we don't urlencode everything, just enough stuff.
   echo -n "${1}" |
   sed 's/%/%25/g
-       s/ /%20/g
-       s/#/%23/g
-       s/\$/%24/g
-       s/\&/%26/g
-       s/+/%2b/g
-       s/,/%2c/g
-       s/:/%3a/g
-       s/;/%3b/g
-       s/?/%3f/g
-       s/@/%40/g
-       s/	/%09/g'
+  s/ /%20/g
+  s/#/%23/g
+  s/\$/%24/g
+  s/\&/%26/g
+  s/+/%2b/g
+  s/,/%2c/g
+  s/:/%3a/g
+  s/;/%3b/g
+  s/?/%3f/g
+  s/@/%40/g
+  s/	/%09/g'
 }
 
 xmldec() {
@@ -76,9 +68,9 @@ xmldec() {
   # accept input on stdin, put it on stdout.
   # patches accepted to get more stuff
   sed 's/\&quot;/\"/g
-       s/\&amp;/\&/g
-       s/\&lt;/</g
-       s/\&gt;/>/g'
+  s/\&amp;/\&/g
+  s/\&lt;/</g
+  s/\&gt;/>/g'
 }
 
 ## basic S3 functionality.  x-amz-header functionality is not implemented.
@@ -101,10 +93,10 @@ s3_signature_string() {
   local mime="${6}"
   local md5="${5}"
   local headers="${7}"
-  printf "%s\n%s\n%s\n%s\n%s" \
-    "${verb}" "${md5}" "${mime}" "${date}" \
-    "${bucket}${resource}" | \
-    hmac sha1 "${S3_SECRET_ACCESS_KEY}" | openssl base64 -e -a
+  printf "%s\n%s\n%s\n%s\n%s%s%s" \
+  "${verb}" "${md5}" "${mime}" "${date}" \
+  "${headers}" "${bucket}" "${resource}" | \
+  hmac sha1 "${S3_SECRET_ACCESS_KEY}" | openssl base64 -e -a
 }
 
 # cheesy, but it is the best way to have multiple headers.
@@ -127,38 +119,39 @@ s3_curl() {
   # header handling is kinda fugly, but it works.
   bucket="${2:+/${2}}" # slashify the bucket
   remote="$(urlenc "/${3}")" # if you don't, strange things may happen.
-  stdopts="--connect-timeout 10  -v"
-  [[ $CURL_S3_DEBUG == true ]] && stdopts="${stdopts} --show-error "
+  stdopts="--connect-timeout 10 --fail --silent"
+  [[ $CURL_S3_DEBUG == true ]] && stdopts="${stdopts} --show-error --fail"
   case "${1}" in
-   GET) arg="-o" inout="${4:--}" # stdout if no $4
-	;;
-   PUT) [[ ${2} ]] || die "PUT can has bucket?"
-        if [[ ! ${3} ]]; then
-	  arg="-X PUT"
-	  headers[${#headers[@]}]="Content-Length: 0"
-	elif [[ -f ${4} ]]; then
-          md5="$(openssl dgst -md5 -binary "${4}"|openssl base64 -e -a)"
-	  arg="-T" inout="${4}"
-	  #headers[${#headers[@]}]="Expect: 100-continue"
-	else
-	  die "Cannot write non-existing file ${4}"
-        fi
-	;;
-   DELETE) arg="-X DELETE"
-           ;;
-   HEAD) arg="-I" ;;
-   *) die "Unknown verb ${1}.  It probably would not have worked anyways." ;;
+    GET) arg="-o" inout="${4:--}" # stdout if no $4
+    ;;
+    PUT) [[ ${2} ]] || die "PUT can has bucket?"
+    if [[ ! ${3} ]]; then
+      arg="-X PUT"
+      headers[${#headers[@]}]="Content-Length: 0"
+    elif [[ -f ${4} ]]; then
+      md5="$(openssl dgst -md5 -binary "${4}"|openssl base64 -e -a)"
+      arg="-T" inout="${4}"
+      headers[${#headers[@]}]="Expect: 100-continue"
+    else
+      die "Cannot write non-existing file ${4}"
+    fi
+    ;;
+    DELETE) arg="-X DELETE"
+    ;;
+    HEAD) arg="-I" ;;
+    *) die "Unknown verb ${1}.  It probably would not have worked anyways." ;;
   esac
-  date="$(TZ=UTC date '+%a, %e %b %Y %H:%M:%S +0000')"
+  date="$(TZ=UTC date '+%a, %e %b %Y %H:%M:%S %z')"
   sig=$(s3_signature_string ${1} "${date}" "${bucket}" "${remote}" "${md5}")
+
   headers[${#headers[@]}]="Authorization: AWS ${S3_ACCESS_KEY_ID}:${sig}"
   headers[${#headers[@]}]="Date: ${date}"
   [[ ${md5} ]] && headers[${#headers[@]}]="Content-MD5: ${md5}"
-  url="http://force-cli.s3.amazonaws.com${bucket}${remote}"
-  (curl_headers "${headers[@]}")
-
   curl ${arg} "${inout}" ${stdopts} -K <(curl_headers "${headers[@]}") \
-    "http:/${bucket}.s3.amazonaws.com${remote}"
+  "http:/${bucket}.s3.amazonaws.com${remote}"
+
+  #curl ${arg} "${inout}" ${stdopts} -K <(curl_headers "${headers[@]}") \
+  #"http://s3.amazonaws.com${bucket}${remote}"
 }
 
 s3_put() {
@@ -192,7 +185,6 @@ s3_buckets() {
 s3_list() {
   # $1 = bucket to list
   [[ ${1} ]] || return 1
-  s3_get "${1}"
   s3_get "${1}" |grep -o '<Key>[^>]*</Key>' |sed 's/<[^>]*>//g'| xmldec
 }
 
@@ -210,8 +202,7 @@ s3_rmrf() {
   done
 }
 
-echo $AWS_SECRET > secretkey.txt
-export S3_SECRET_ACCESS_KEY=secretkey.txt
+S3_SECRET_ACCESS_KEY=secretkey.txt
 check_deps
 cmd="$1"
 shift
@@ -224,5 +215,5 @@ case $cmd in
   buckets) s3_buckets ;;
   rmrf) s3_rmrf "$@" ;;
   *) die "Unknown command ${cmd}."
-    ;;
+  ;;
 esac
