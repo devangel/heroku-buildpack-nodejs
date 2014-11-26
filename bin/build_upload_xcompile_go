@@ -47,13 +47,13 @@ installGo() {
   cd $GOROOT/src
   echo "Cloning git://github.com/davecheney/golang-crosscompile.git"
   git clone git://github.com/davecheney/golang-crosscompile.git
-
+  echo $PLATFORMS
   pform=$PLATFORMS
 
   # need to check if we got a good clone
   source golang-crosscompile/crosscompile.bash
 
-
+  pform="windows/386"
   for platform in $pform; do
     echo "Compiling for ${platform}..."
     go-crosscompile-build $platform
