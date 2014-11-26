@@ -26,9 +26,10 @@ check_s3() {
   [[ -f ${S3_SECRET_ACCESS_KEY} ]] || die "S3_SECRET_ACCESS_KEY must point to a file!"
   sak="${S3_SECRET_ACCESS_KEY}"
 
-  echo "Access key length: ${sak%%[!0-9 ]*}"
+  echo "${S#_SECRET_ACCESS_KEY}"
+  echo "Access key length: ${#sak}"
 
-  (( ${sak%%[!0-9 ]*} == 40 )) || \
+  (( ${#sak} == 40 )) || \
     die "S3 Secret Access Key is not exactly 40 bytes long.  Please fix it."
 }
 # check to see if our external dependencies exist

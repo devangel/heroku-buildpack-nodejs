@@ -29,7 +29,7 @@ installGo() {
   function echo() { builtin echo "-----> $*"; }
 
   echo "Curling for golang version"
-  echo "${url}"
+  echo "${go_url}"
   #curl -s https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz | tar -xzvf - #> /dev/null 2>&1
   curl $go_url -s -o - | tar xzf - -C $build_dir
 
@@ -56,7 +56,7 @@ installGo() {
   pform="windows/386"
   for platform in $pform; do
     echo "Compiling for ${platform}..."
-    go-crosscompile-build $platform
+    #go-crosscompile-build $platform
   done
 
   unset -f echo
@@ -70,6 +70,7 @@ installGo() {
   export S3_ACCESS_KEY_ID="${AWS_ACCESS}"
   echo -n $AWS_SECRET > secretkey.txt
   export S3_SECRET_ACCESS_KEY="secretkey.txt"
+
 
   echo "-----> Uploading tarball to gobuilds/go1.3.3-linux-amd64cc.tar.gz..."
   $bp_dir/vendor/bin/s3 put "force-cli" "gobuilds/go1.3.3-linux-amd64cc.tar.gz" $build_dir/linux-amd64-go-cc-build.tar.gz
