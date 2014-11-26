@@ -33,7 +33,7 @@ check_s3() {
   echo "AWS_SECRET is ${AWS_SECRET}"
   echo "S3_ACCESS_KEY_ID is ${S3_ACCESS_KEY_ID}"
   echo "AWS_ACCESS is ${AWS_ACCESS}"
-  
+
   (( ${#sak} == 40 )) || \
     die "S3 Secret Access Key is not exactly 40 bytes long.  Please fix it."
 }
@@ -105,14 +105,6 @@ s3_signature_string() {
     "${verb}" "${md5}" "${mime}" "${date}" \
     "${bucket}${resource}" | \
     hmac sha1 "${S3_SECRET_ACCESS_KEY}" | openssl base64 -e -a
-  echo ""
-  echo "Here is what I'm signing"
-  echo ${verb}
-  echo ${md5}
-  echo ${mime}
-  echo ${date}
-  echo ${bucket}${resource}
-  echo "*************"
 }
 
 # cheesy, but it is the best way to have multiple headers.

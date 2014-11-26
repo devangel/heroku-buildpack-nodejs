@@ -56,7 +56,7 @@ installGo() {
   pform="windows/386"
   for platform in $pform; do
     echo "Compiling for ${platform}..."
-    #go-crosscompile-build $platform
+    go-crosscompile-build $platform > /dev/null 2>&1
   done
 
   unset -f echo
@@ -72,7 +72,7 @@ installGo() {
   export S3_SECRET_ACCESS_KEY=$(cat secretkey.txt)
 
   env
-  
+
   echo "-----> Uploading tarball to gobuilds/go1.3.3-linux-amd64cc.tar.gz..."
   $bp_dir/vendor/bin/s3 put "force-cli" "gobuilds/go1.3.3-linux-amd64cc.tar.gz" $build_dir/linux-amd64-go-cc-build.tar.gz
 
