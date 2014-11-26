@@ -100,7 +100,7 @@ mkdir -p $build_dir/.heroku
 
 # Save resolved node version in the slug for later reference
 echo $node_version > $build_dir/.heroku/node-version
-echo $go_version > $build_dir/.heroku/go-version
+echo $GOVERSION > $build_dir/.heroku/go-version
 
 # Purge node-related cached content, being careful not to purge the top-level
 # cache, for the sake of heroku-buildpack-multi apps.
