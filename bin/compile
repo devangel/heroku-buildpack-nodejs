@@ -101,7 +101,6 @@ mkdir -p $build_dir/.heroku
 
 # Save resolved node version in the slug for later reference
 echo $node_version > $build_dir/.heroku/node-version
-echo $GOVERSION > $build_dir/.heroku/go-version
 
 # Purge node-related cached content, being careful not to purge the top-level
 # cache, for the sake of heroku-buildpack-multi apps.
@@ -147,6 +146,7 @@ if test -f $cache_dir/node/.heroku/go-version && [ $(cat $cache_dir/node/.heroku
   status "Installing go"
   source $bp_dir/bin/build_upload_xcompile_go
   installGo $GOVERSION $PLATFORMS
+  echo $GOVERSION > $build_dir/.heroku/go-version
 else
   mkdir -p $build_dir/vendor/lib
   cd $build_dir/vendor/lib
