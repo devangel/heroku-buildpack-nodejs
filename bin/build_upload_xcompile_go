@@ -18,19 +18,25 @@ installGo() {
   PLATFORMS="darwin/386 darwin/amd64 linux/386 linux/amd64 linux/arm windows/386 windows/amd64"
   GOOS="linux"
   GOARCH="amd64"
-
+  BUILD_HOST_OS=$(uname | tr '[:upper:]' '[:lower:]')
+  BUILD_HOST_ARCH=$(getconf LONG_BIT)
   # command playback
   #rm -rf $build_dir/work
   #mkdir /tmp/work
   #cd /tmp/work
+  if test $BUILD_HOST_ARCH != "64"; then
+    BUILD_HOST_ARCH="386"
+  else
+    BUILD_HOST_ARCH="amd64"
+  fi
 
-  go_url="https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz"
+  go_url="https://storage.googleapis.com/golang/go${GOVERSION}.${BUILD_HOST_OS}-${BUILD_HOST_ARCH}.tar.gz"
 
   function echo() { builtin echo "-----> $*"; }
 
   echo "Curling for golang version"
   echo "${go_url}"
-  #curl -s https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz | tar -xzvf - #> /dev/null 2>&1
+  #curl -s https://storage.googleapis.com/golang/go${GOVERSION}.${BUILD_HOST_OS}-${BUILD_HOST_ARCH} | tar -xzvf - #> /dev/null 2>&1
   curl $go_url -s -o - | tar xzf - -C $build_dir
 
   # need to check if we got a good download
@@ -63,7 +69,7 @@ installGo() {
 
   cd $build_dir
   echo "-----> Tarballing linux-amd64-go-cc-build.tar.gz go..."
-  tar -zcvf go${GOVERSION}-linux-amd64-go-cc-build.tar.gz go
+  tar -zcvf go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}-go-cc-build.tar.gz go
   mv $build_dir/go $build_dir/vendor/lib/go
 
   export PATH="vendor/bin:$PATH"
@@ -72,13 +78,15 @@ installGo() {
   export S3_SECRET_ACCESS_KEY=$(cat secretkey.txt)
 
   env
+  GOOS="linux"
+  GOARCH="amd64"
 
-  echo "-----> Uploading tarball to gobuilds/go${GOVERSION}-linux-amd64cc.tar.gz..."
-  $bp_dir/vendor/bin/s3 put "force-cli" "gobuilds/go${GOVERSION}-linux-amd64cc.tar.gz" $build_dir/go${GOVERSION}-linux-amd64-go-cc-build.tar.gz
+  echo "-----> Uploading tarball to gobuilds/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}cc.tar.gz..."
+  $bp_dir/vendor/bin/s3 put "force-cli" "gobuilds/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}cc.tar.gz" $build_dir/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}-go-cc-build.tar.gz
 
-  rm -rf $build_dir/linux-amd64-go-cc-build.tar.gz
+  rm -rf $build_dir/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}-go-cc-build.tar.gz
   echo "-----> Crosscompile build complete for go ${GOVERSION}"
-  echo "-----> Binaries have been saved to S3 force-cli/gobuilds/go${GOVERSION}-${GOOS}-${GOARCH}cc.tar.gz"
+  echo "-----> Binaries have been saved to S3 force-cli/gobuilds/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}-go-cc.tar.gz"
 
   #exitcode=$?
 }
