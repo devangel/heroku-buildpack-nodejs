@@ -38,7 +38,7 @@ installGo() {
   sed -i.bak 's/\ -v\ /\ /g' make.bash
 
   echo "Compiling using ./make.bash"
-  ./make.bash #> /dev/null 2>&1
+  ./make.bash > /dev/null 2>&1
 
   export GOROOT="${build_dir}/go"
   export GOPATH="${GOROOT}/src"
@@ -71,7 +71,8 @@ installGo() {
   echo -n $AWS_SECRET > secretkey.txt
   export S3_SECRET_ACCESS_KEY=$(cat secretkey.txt)
 
-
+  env
+  
   echo "-----> Uploading tarball to gobuilds/go1.3.3-linux-amd64cc.tar.gz..."
   $bp_dir/vendor/bin/s3 put "force-cli" "gobuilds/go1.3.3-linux-amd64cc.tar.gz" $build_dir/linux-amd64-go-cc-build.tar.gz
 
