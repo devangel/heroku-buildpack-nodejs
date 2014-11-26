@@ -36,7 +36,7 @@ installGo() {
   cd $build_dir/go/src
   sed -i.bak 's/\ -v\ /\ /g' make.bash
 
-  function echo() { builtin echo "-----> $*">; }
+  function echo() { builtin echo "-----> $*"; }
 
   echo "Compiling using ./make.bash"
   ./make.bash #> /dev/null 2>&1
