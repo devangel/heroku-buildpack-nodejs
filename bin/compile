@@ -142,6 +142,7 @@ mkdir -p $build_dir/.goheroku
 status "Checking cache for go ${GOVERSION}"
 ls $cache_dir
 ls $cache_dir/go
+cat $cache_dir/go/go-version
 
 if test -f $cache_dir/go/go-version; then
   status "Found ${cache_dir}/go/go-version file..."
