@@ -57,11 +57,7 @@ mv $build_dir/node-v$node_version-linux-x64 $build_dir/vendor/node
 chmod +x $build_dir/vendor/node/bin/*
 PATH=$build_dir/vendor/node/bin:$PATH
 
-rm -rf $cache_dir
-mkdir $cache_dir
-
 # Run subsequent node/npm commands from the build path
-
 cd $build_dir
 
 # If node_modules directory is checked into source control then
@@ -142,32 +138,33 @@ fi
 # Here we should check to see if the right version of go is stashed
 # in S3 so we don't have to build it.
 #if test -f $cache_dir/node/.heroku/go-version && [ $(cat $cache_dir/node/.heroku/go-version) != "$GOVERSION" ]; then
-if test -f $build_dir/.heroku/go-version; then
-  if [ $(cat $build_dir/.heroku/go-version) != "$GOVERSION" ]; then
+mkdir -p $build_dir/.goheroku
+
+if test -f $cache_dir/go/.goheroku/go-version; then
+  if [ $(cat $cache_dir/go/.goheroku/go-version) != "$GOVERSION" ]; then
     status "Installing go"
     source $bp_dir/bin/build_upload_xcompile_go
     installGo $GOVERSION $PLATFORMS
-    echo $GOVERSION > $build_dir/.heroku/go-version
+    echo $GOVERSION > $build_dir/.goheroku/go-version
   else
     mkdir -p $build_dir/vendor/lib
     cd $build_dir/vendor/lib
     status "Downloading cached version of go ${GOVERSION}"
     curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${GOVERSION}-linux-amd64cc.tar.gz | tar -xzf -
     chmod +x $build_dir/vendor/lib/go/bin/*
+    echo $GOVERSION > $build_dir/.goheroku/go-version
     PATH=$build_dir/vendor/lib/go/bin:$PATH
   fi
 else
   status "Installing go"
   source $bp_dir/bin/build_upload_xcompile_go
   installGo $GOVERSION $PLATFORMS
-  echo $GOVERSION > $build_dir/.heroku/go-version
+  echo $GOVERSION > $build_dir/.goheroku/go-version
 fi
-
-
 )
 
 # Copy goodies to the cache
-cp -r $build_dir/.heroku $cache_dir/node
+cp -r $build_dir/.goheroku $cache_dir/go
 
 # Update the PATH xx
 status "Building runtime environment"
