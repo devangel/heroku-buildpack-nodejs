@@ -139,14 +139,19 @@ fi
 # in S3 so we don't have to build it.
 #if test -f $cache_dir/node/.heroku/go-version && [ $(cat $cache_dir/node/.heroku/go-version) != "$GOVERSION" ]; then
 mkdir -p $build_dir/.goheroku
+status "Checking cache for go ${GOVERSION}"
 
 if test -f $cache_dir/go/.goheroku/go-version; then
+  status "It appears that we have recorded a version of go in the cache"
+  status "The version is $(cat $cache_dir/go/.goheroku/go-version)"
   if [ $(cat $cache_dir/go/.goheroku/go-version) != "$GOVERSION" ]; then
+    status "Evidently, the cached version does not match the requestd version."
     status "Installing go"
     source $bp_dir/bin/build_upload_xcompile_go
     installGo $GOVERSION $PLATFORMS
     echo $GOVERSION > $build_dir/.goheroku/go-version
   else
+    status "Looks like we have a cached version we can just download to install."
     mkdir -p $build_dir/vendor/lib
     cd $build_dir/vendor/lib
     status "Downloading cached version of go ${GOVERSION}"
@@ -156,6 +161,7 @@ if test -f $cache_dir/go/.goheroku/go-version; then
     PATH=$build_dir/vendor/lib/go/bin:$PATH
   fi
 else
+  status "Could not find a cached version file."
   status "Installing go"
   source $bp_dir/bin/build_upload_xcompile_go
   installGo $GOVERSION $PLATFORMS
