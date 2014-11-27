@@ -143,10 +143,10 @@ status "Checking cache for go ${GOVERSION}"
 ls $cache_dir
 ls $cache_dir/go
 
-if test -f $cache_dir/go/.goheroku/go-version; then
+if test -f $cache_dir/go/go-version; then
   status "It appears that we have recorded a version of go in the cache"
   status "The version is $(cat $cache_dir/go/.goheroku/go-version)"
-  if [ $(cat $cache_dir/go/.goheroku/go-version) != "$GOVERSION" ]; then
+  if [ $(cat $cache_dir/go/go-version) != "$GOVERSION" ]; then
     status "Evidently, the cached version does not match the requestd version."
     status "Installing go"
     source $bp_dir/bin/build_upload_xcompile_go
