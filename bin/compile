@@ -151,14 +151,12 @@ if test -f $cache_dir/go/go-version; then
     status "Go $GOVERSION not installed, performing full install."
     source $bp_dir/bin/build_upload_xcompile_go
     installGo $GOVERSION $PLATFORMS
-    echo $GOVERSION > $build_dir/.goheroku/go-version
   else
     mkdir -p $build_dir/vendor/lib
     cd $build_dir/vendor/lib
     status "Downloading cached version of go ${GOVERSION}"
     curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${GOVERSION}-linux-amd64cc.tar.gz | tar -xzf -
     chmod +x $build_dir/vendor/lib/go/bin/*
-    echo $GOVERSION > $build_dir/.goheroku/go-version
     PATH=$build_dir/vendor/lib/go/bin:$PATH
   fi
 else
@@ -166,9 +164,11 @@ else
   status "Go $GOVERSION not installed, performing full install."
   source $bp_dir/bin/build_upload_xcompile_go
   installGo $GOVERSION $PLATFORMS
-  echo $GOVERSION > $build_dir/.goheroku/go-version
 fi
 )
+
+# Save resolved go version in the slug for later reference
+echo $GOVERSION > $build_dir/.goheroku/go-version
 
 # Copy goodies to the cache
 cp -r $build_dir/.goheroku $cache_dir/go
