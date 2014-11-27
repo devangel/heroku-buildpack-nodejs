@@ -140,6 +140,8 @@ fi
 #if test -f $cache_dir/node/.heroku/go-version && [ $(cat $cache_dir/node/.heroku/go-version) != "$GOVERSION" ]; then
 mkdir -p $build_dir/.goheroku
 status "Checking cache for go ${GOVERSION}"
+ls $cache_dir
+ls $cache_dir/go
 
 if test -f $cache_dir/go/.goheroku/go-version; then
   status "It appears that we have recorded a version of go in the cache"
