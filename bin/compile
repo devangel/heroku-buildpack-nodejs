@@ -140,9 +140,13 @@ fi
 #if test -f $cache_dir/node/.heroku/go-version && [ $(cat $cache_dir/node/.heroku/go-version) != "$GOVERSION" ]; then
 mkdir -p $build_dir/.goheroku
 status "Checking cache for go ${GOVERSION}"
+ls $cache_dir
+ls $cache_dir/go
 
 if test -f $cache_dir/go/go-version; then
+  status "Found ${cache_dir}/go/go-version file..."
   if [ $(cat $cache_dir/go/go-version) != "$GOVERSION" ]; then
+    status "Go version found in cache, but doesn't match current version"
     status "Go $GOVERSION not installed, performing full install."
     source $bp_dir/bin/build_upload_xcompile_go
     installGo $GOVERSION $PLATFORMS
@@ -157,6 +161,7 @@ if test -f $cache_dir/go/go-version; then
     PATH=$build_dir/vendor/lib/go/bin:$PATH
   fi
 else
+  status "No ${cache_dir}/go/go-version file found..."
   status "Go $GOVERSION not installed, performing full install."
   source $bp_dir/bin/build_upload_xcompile_go
   installGo $GOVERSION $PLATFORMS
