@@ -171,6 +171,7 @@ fi
 
 # Save resolved go version in the slug for later reference
 echo $GOVERSION > $build_dir/.goheroku/go-version
+echo $GOVERSION > $cachd_dir/go/go-version
 
 # Copy goodies to the cache
 cp -r $build_dir/.goheroku $cache_dir/go
