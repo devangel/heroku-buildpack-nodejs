@@ -184,7 +184,7 @@ echo "export PATH=\"\$HOME/vendor/lib/go/bin:\$HOME/vendor/bin:\$PATH\";export G
 
 cd $build_dir
 status "Updating mercurial runtime"
-curl -s http://www.mercurial-scm.org/release/mercurial-3.2.1.tar.gz > mercurial-3.2.1.tar.gz
+curl -s -L http://www.mercurial-scm.org/release/mercurial-3.2.1.tar.gz > mercurial-3.2.1.tar.gz
 tar -xzf mercurial-3.2.1.tar.gz
 cd mercurial-3.2.1
 status "Making mercurial runtime"
