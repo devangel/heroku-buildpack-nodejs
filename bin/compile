@@ -150,7 +150,7 @@ status "Checking cache for go ${GOVERSION}"
 #    status "Go version found in cache, but doesn't match current version"
 #    status "Go $GOVERSION not installed, performing full install."
 #    status "Sourcing build_upload_xcompile_go from project..."
-    source $bp_dir/bin/build_upload_xcompile_go
+    source $bp_dir/bin/build_upload_xcompile_go.sh
     status "Calling installGo $GOVERSION $PLATFORMS"
     installGo $GOVERSION $PLATFORMS
 #  else
