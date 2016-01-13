@@ -90,10 +90,11 @@ installGo() {
   BUILD_HOST_OS=$(uname|tr A-Z a-z)
   BUILD_HOST_ARCH=$arch
 
-  ver=$(expand_ver $GOVERSION)
+  ver=go${GOVERSION:-1.5}
+  ver=$(expand_ver $ver)
 
   step "Expanded go Version $ver"
-  
+
   file=${GOFILE:-$ver.linux-amd64.tar.gz}
   url=${GOURL:-$(urlfor $ver $file)}
 
