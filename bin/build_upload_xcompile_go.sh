@@ -93,7 +93,7 @@ installGo() {
   ver=go${GOVERSION:-1.5}
   ver=$(expand_ver $ver)
 
-  step "Expanded go Version $ver"
+  # step "Expanded go Version $ver"
 
   file=${GOFILE:-$ver.linux-amd64.tar.gz}
   url=${GOURL:-$(urlfor $ver $file)}
@@ -112,9 +112,9 @@ installGo() {
 
   if test -d $cache/$ver/go
   then
-      step "Using $ver"
+      # step "Using $ver"
       cp -r $cache/$ver/go "$build_dir/vendor"
-      ls -l $cache/$ver/go
+      # ls -l $cache/$ver/go
   else
       rm -rf $cache/* # be sure not to build up cruft
       mkdir -p $cache/$ver
