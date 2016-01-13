@@ -92,6 +92,8 @@ installGo() {
 
   ver=$(expand_ver $GOVERSION)
 
+  step "Expanded go Version $ver"
+  
   file=${GOFILE:-$ver.linux-amd64.tar.gz}
   url=${GOURL:-$(urlfor $ver $file)}
 
