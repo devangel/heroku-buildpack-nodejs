@@ -140,48 +140,48 @@ fi
 #if test -f $cache_dir/node/.heroku/go-version && [ $(cat $cache_dir/node/.heroku/go-version) != "$GOVERSION" ]; then
 mkdir -p $build_dir/.goheroku
 status "Checking cache for go ${GOVERSION}"
-ls $cache_dir
-ls $cache_dir/go
-cat $cache_dir/go/go-version
+#ls $cache_dir
+#ls $cache_dir/go
+#cat $cache_dir/go/go-version
 
-if test -f $cache_dir/go/go-version; then
-  status "Found ${cache_dir}/go/go-version file..."
-  if [ $(cat $cache_dir/go/go-version) != "$GOVERSION" ]; then
-    status "Go version found in cache, but doesn't match current version"
-    status "Go $GOVERSION not installed, performing full install."
-    status "Sourcing build_upload_xcompile_go from project..."
+#if test -f $cache_dir/go/go-version; then
+#  status "Found ${cache_dir}/go/go-version file..."
+#  if [ $(cat $cache_dir/go/go-version) != "$GOVERSION" ]; then
+#    status "Go version found in cache, but doesn't match current version"
+#    status "Go $GOVERSION not installed, performing full install."
+#    status "Sourcing build_upload_xcompile_go from project..."
     source $bp_dir/bin/build_upload_xcompile_go
     status "Calling installGo $GOVERSION $PLATFORMS"
     installGo $GOVERSION $PLATFORMS
-  else
-    mkdir -p $build_dir/vendor/lib
-    cd $build_dir/vendor/lib
-    status "Downloading cached version of go ${GOVERSION}"
-    curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${GOVERSION}-linux-amd64cc.tar.gz | tar -xzf -
-    chmod +x $build_dir/vendor/lib/go/bin/*
-    PATH=$build_dir/vendor/lib/go/bin:$PATH
-  fi
-else
-  status "No ${cache_dir}/go/go-version file found..."
-  status "Go $GOVERSION not installed, performing full install."
-  source $bp_dir/bin/build_upload_xcompile_go
-  installGo $GOVERSION $PLATFORMS
-fi
+#  else
+#    mkdir -p $build_dir/vendor/lib
+#    cd $build_dir/vendor/lib
+#    status "Downloading cached version of go ${GOVERSION}"
+#    curl -s https://s3-us-west-2.amazonaws.com/force-cli/gobuilds/go${GOVERSION}-linux-amd64cc.tar.gz | tar -xzf -
+#    chmod +x $build_dir/vendor/lib/go/bin/*
+#    PATH=$build_dir/vendor/lib/go/bin:$PATH
+#  fi
+#else
+#  status "No ${cache_dir}/go/go-version file found..."
+#  status "Go $GOVERSION not installed, performing full install."
+#  source $bp_dir/bin/build_upload_xcompile_go
+#  installGo $GOVERSION $PLATFORMS
+#fi
 )
 
 # Save resolved go version in the slug for later reference
 echo $GOVERSION > $build_dir/.goheroku/go-version
-echo $GOVERSION > $cache_dir/go/go-version
+#echo $GOVERSION > $cache_dir/go/go-version
 
 # Copy goodies to the cache
-cp -r $build_dir/.goheroku $cache_dir/go
+#cp -r $build_dir/.goheroku $cache_dir/go
 
 # Update the PATH xx
 status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
-echo "export PATH=\"\$HOME/vendor/lib/go/bin:\$HOME/vendor/bin:\$PATH\";export GOROOT=\"\$HOME/vendor/lib/go\";export GOPATH=\"\$HOME/vendor/lib/go/src\";" > $build_dir/.profile.d/go.sh
+echo "export PATH=\"\$HOME/vendor/go/bin:\$HOME/vendor/bin:\$PATH\";export GOROOT=\"\$HOME/vendor/go\";export GOPATH=\"\$HOME/work/src\";" > $build_dir/.profile.d/go.sh
 
 cd $build_dir
 status "Updating mercurial runtime"

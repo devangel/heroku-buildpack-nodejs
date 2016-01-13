@@ -1,0 +1,7 @@
+worker:
+  build: .
+  command: 'bash -c ''bash'''
+  working_dir: /app/user
+  environment:
+shell: null
+
