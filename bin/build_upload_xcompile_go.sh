@@ -143,7 +143,7 @@ installGo() {
   #echo "-----> Uploading tarball to gobuilds/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}cc.tar.gz..."
   #$bp_dir/vendor/bin/s3 put "force-cli" "gobuilds/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}cc.tar.gz" $build_dir/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}-go-cc-build.tar.gz
 
-  $rm -rf $build_dir/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}-go-cc-build.tar.gz
+  #$rm -rf $build_dir/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}-go-cc-build.tar.gz
   #echo "-----> Crosscompile build complete for go ${GOVERSION}"
   #echo "-----> Binaries have been saved to S3 force-cli/gobuilds/go${GOVERSION}-${BUILD_HOST_OS}-${BUILD_HOST_ARCH}-go-cc.tar.gz"
 
