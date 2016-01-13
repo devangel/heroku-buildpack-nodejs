@@ -113,7 +113,7 @@ installGo() {
   if test -d $cache/$ver/go
   then
       step "Using $ver"
-      cp -r $chache/$ver/go "$build_dir/vendor"
+      cp -r $cache/$ver/go "$build_dir/vendor"
       ls -l $cache/$ver/go
   else
       rm -rf $cache/* # be sure not to build up cruft
